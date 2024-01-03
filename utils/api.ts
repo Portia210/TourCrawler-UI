@@ -8,13 +8,9 @@ const nextReturn = (
 ) => {
   if (status > 300 || status < 200) {
     console.error("nextReturn error", JSON.stringify(payload));
-    // send error to sentry
-  }
-  if (headers) {
-    return NextResponse.json(payload, {
+    return NextResponse.json(JSON.parse(payload), {
       status,
       statusText,
-      headers,
     });
   }
   return NextResponse.json(payload, {

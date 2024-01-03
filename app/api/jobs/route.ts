@@ -1,6 +1,6 @@
 import connectMongoDB from "@/lib/database/client";
 import CrawlerJob from "@/lib/database/model/CrawlerJob";
-import { CrawlerCommandDto } from "@/lib/dto/CrawlerCommand.dto";
+import { CrawlerCommandZSchema } from "@/lib/dto/CrawlerCommand.dto";
 import { nextReturn } from "@/utils/api";
 import { NextRequest } from "next/server";
 
