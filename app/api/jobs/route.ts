@@ -10,8 +10,14 @@ import { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     await connectMongoDB();
-    const jobs = await CrawlerJob.find();
-    return nextReturn(jobs, 200, "OK");
+    const jobs = await CrawlerJob.findOne({
+      status: {
+        $eq: "PENDING",
+      },
+    })
+      .sort({ created_at: -1 })
+      .exec();
+    return nextReturn([jobs].filter(Boolean), 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }
@@ -23,7 +29,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await connectMongoDB();
-    const command = (await request.json()) as CrawlerCommandDto;
+    const payload = await request.json();
+    const command = CrawlerCommandZSchema.parse(payload);
     const crawlerJob = new CrawlerJob(command);
     await crawlerJob.save();
     return nextReturn("Command send successfully", 200, "OK");
