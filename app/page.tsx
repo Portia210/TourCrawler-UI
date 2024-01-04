@@ -1,9 +1,9 @@
-import TourCompareMap from "@/components/TourCompareMap";
+import TourCompareCrawler from "@/components/TourCompare/TourCompareCrawler";
 
 export default function Home() {
   return (
     <main>
-      <TourCompareMap />
+      <TourCompareCrawler />
     </main>
   );
 }

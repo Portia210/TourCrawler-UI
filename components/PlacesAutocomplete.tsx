@@ -1,4 +1,5 @@
 "use client";
+import { GOOGLE_MAP_API_KEY } from "@/constants/config";
 import {
   Combobox,
   ComboboxInput,
@@ -7,12 +8,17 @@ import {
   ComboboxPopover,
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
+import { useLoadScript } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
+import { ITourCompareDestination } from "./types";
 
-const PlacesAutocomplete = ({ setSelected }: any) => {
+interface PlacesAutocompleteProps {
+  setSelected: (val: ITourCompareDestination) => void;
+}
+const PlacesAutocomplete = (props: PlacesAutocompleteProps) => {
   const {
     ready,
     value,
@@ -21,12 +27,17 @@ const PlacesAutocomplete = ({ setSelected }: any) => {
     clearSuggestions,
   } = usePlacesAutocomplete();
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: GOOGLE_MAP_API_KEY,
+    libraries: ["places"],
+  });
+
   const handlePlaceClick = async (placeId: string, address: string) => {
     setValue(address, false);
     clearSuggestions();
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
-    setSelected({ placeId, address, lat, lng });
+    props.setSelected({ placeId, address, lat, lng });
   };
 
   return (
@@ -35,7 +46,7 @@ const PlacesAutocomplete = ({ setSelected }: any) => {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         disabled={!ready}
-        className="combobox-input"
+        className="w-1/2 p-2 rounded-md"
         placeholder="Search an address"
       />
       <ComboboxPopover>
