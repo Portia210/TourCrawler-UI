@@ -2,12 +2,16 @@
 import { GOOGLE_MAP_API_KEY } from "@/constants/config";
 import { useLoadScript } from "@react-google-maps/api";
 import { Button, DatePicker, Form, InputNumber } from "antd";
+import dayjs from "dayjs";
+import { useState } from "react";
 import PlacesAutocomplete from "../PlacesAutocomplete";
-import { ITourCompareDestination } from "../types";
+import { crawlerCommandMapper } from "../utils/crawlerCommandMapper";
 
 const { RangePicker } = DatePicker;
 
 export default function TourCompareCrawler() {
+  const [loading, setLoading] = useState(false);
+
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAP_API_KEY,
     libraries: ["places"],
@@ -15,24 +19,26 @@ export default function TourCompareCrawler() {
 
   if (!isLoaded) return <div>Loading...</div>;
 
-  const handleDestinationChange = (destination: ITourCompareDestination) => {
-    console.log("destination1", destination);
+  const disabledDate = (current: any) => {
+    return current < dayjs().startOf("day");
   };
-
-  const onRoomChange = (value: any) => {
-    console.log("onRoomChange", value);
-  };
-
-  const onAdultChange = (value: any) => {
-    console.log("onAdultChange", value);
-  };
-
-  const onChildrenChange = (value: any) => {
-    console.log("onChildrenChange", value);
-  };
-
-  const onFinish = (values: any) => {
-    console.log("onFinish", values);
+  const onFinish = async (values: any) => {
+    try {
+      setLoading(true);
+      const payload = crawlerCommandMapper(values);
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => res.json());
+      console.log("response::", response);
+    } catch (error) {
+      console.error("Send command failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,7 +57,7 @@ export default function TourCompareCrawler() {
         name="destination"
         rules={[{ required: true, message: "Please input your destination!" }]}
       >
-        <PlacesAutocomplete setSelected={handleDestinationChange} />
+        <PlacesAutocomplete />
       </Form.Item>
 
       <Form.Item<any>
@@ -64,33 +70,25 @@ export default function TourCompareCrawler() {
           },
         ]}
       >
-        <RangePicker size="middle" className="w-full" />
+        <RangePicker
+          disabledDate={disabledDate}
+          size="middle"
+          className="w-full"
+        />
       </Form.Item>
       <Form.Item<any>
-        label="No of Room"
-        name="room"
+        label="No of Rooms"
+        name="rooms"
         rules={[{ required: true, message: "Please input number of room!" }]}
       >
-        <InputNumber
-          className="w-full"
-          min={1}
-          max={6}
-          defaultValue={1}
-          onChange={onRoomChange}
-        />
+        <InputNumber className="w-full" min={1} max={6} defaultValue={1} />
       </Form.Item>
       <Form.Item<any>
         label="No of Adult"
         name="adult"
         rules={[{ required: true, message: "Please input number of Adult!" }]}
       >
-        <InputNumber
-          className="w-full"
-          min={1}
-          max={6}
-          defaultValue={1}
-          onChange={onAdultChange}
-        />
+        <InputNumber className="w-full" min={1} max={6} defaultValue={1} />
       </Form.Item>
       <Form.Item<any>
         label="No of Children"
@@ -99,17 +97,11 @@ export default function TourCompareCrawler() {
           { required: true, message: "Please input number of Children!" },
         ]}
       >
-        <InputNumber
-          className="w-full"
-          min={1}
-          max={6}
-          defaultValue={1}
-          onChange={onChildrenChange}
-        />
+        <InputNumber className="w-full" min={1} max={6} defaultValue={1} />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Submit
+        <Button type="primary" htmlType="submit" loading={loading}>
+          Send crawl command
         </Button>
       </Form.Item>
     </Form>

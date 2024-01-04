@@ -11,6 +11,7 @@ const travelorHotelSchema = new mongoose.Schema(
     stars: Number,
     country: Object,
     facilities: Object,
+    reviews: Object,
   },
   {
     timestamps: true,

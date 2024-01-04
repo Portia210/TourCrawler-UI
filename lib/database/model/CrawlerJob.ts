@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const crawlerJobSchema = new mongoose.Schema(
   {
     dataSource: String, // Travelor or Booking
-    destination: String,
+    destination: Object,
     checkInDate: Date,
     checkOutDate: Date,
     adult: Number,
@@ -14,6 +14,7 @@ const crawlerJobSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    typeKey: "$type",
   }
 );
 

@@ -1,6 +1,6 @@
 export interface ITourCompareDestination {
   placeId: string;
-  address: string;
+  destination: string;
   lat?: number;
   lng?: number;
 }

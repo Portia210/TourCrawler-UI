@@ -8,10 +8,6 @@ const nextReturn = (
 ) => {
   if (status > 300 || status < 200) {
     console.error("nextReturn error", JSON.stringify(payload));
-    return NextResponse.json(JSON.parse(payload), {
-      status,
-      statusText,
-    });
   }
   return NextResponse.json(payload, {
     status,

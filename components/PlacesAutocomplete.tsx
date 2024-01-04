@@ -16,7 +16,8 @@ import usePlacesAutocomplete, {
 import { ITourCompareDestination } from "./types";
 
 interface PlacesAutocompleteProps {
-  setSelected: (val: ITourCompareDestination) => void;
+  value?: any;
+  onChange?: (val: ITourCompareDestination) => void;
 }
 const PlacesAutocomplete = (props: PlacesAutocompleteProps) => {
   const {
@@ -37,7 +38,9 @@ const PlacesAutocomplete = (props: PlacesAutocompleteProps) => {
     clearSuggestions();
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
-    props.setSelected({ placeId, address, lat, lng });
+    if (props?.onChange) {
+      props.onChange({ placeId, destination: address, lat, lng });
+    }
   };
 
   return (
