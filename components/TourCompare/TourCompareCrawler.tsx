@@ -1,17 +1,20 @@
 "use client";
 import { GOOGLE_MAP_API_KEY } from "@/constants/config";
 import { useLoadScript } from "@react-google-maps/api";
-import { Button, DatePicker, Form, InputNumber, notification } from "antd";
+import { Button, DatePicker, Form, notification } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import PlacesAutocomplete from "../PlacesAutocomplete";
 import { crawlerCommandMapper } from "../utils/crawlerCommandMapper";
+import RoomSelection from "./RoomSelection";
 
 const { RangePicker } = DatePicker;
 
 export default function TourCompareCrawler() {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
+  const [maxRooms, setMaxRooms] = useState(1);
+  const [rooms, setRooms] = useState<any[]>([]);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAP_API_KEY,
@@ -46,6 +49,22 @@ export default function TourCompareCrawler() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const onRoomInfoChange = (value: any, index: number) => {};
+
+  const renderRoomInfo = () => {
+    return Array.from({ length: maxRooms }, (_, i) => i + 1).map(
+      (room, index) => (
+        <div key={index}>
+          <RoomSelection
+            room={rooms[index]}
+            roomNo={index + 1}
+            onChange={() => onRoomInfoChange(room, index)}
+          />
+        </div>
+      )
+    );
   };
 
   return (
@@ -87,28 +106,23 @@ export default function TourCompareCrawler() {
             className="w-full"
           />
         </Form.Item>
-        <Form.Item<any>
-          label="No of Rooms"
-          name="rooms"
-          rules={[{ required: true, message: "Please input number of room!" }]}
-        >
-          <InputNumber className="w-full" min={1} max={6} defaultValue={1} />
-        </Form.Item>
-        <Form.Item<any>
-          label="No of Adult"
-          name="adult"
-          rules={[{ required: true, message: "Please input number of Adult!" }]}
-        >
-          <InputNumber className="w-full" min={1} max={6} defaultValue={1} />
-        </Form.Item>
-        <Form.Item<any>
-          label="No of Children"
-          name="children"
-          rules={[
-            { required: true, message: "Please input number of Children!" },
-          ]}
-        >
-          <InputNumber className="w-full" min={1} max={6} defaultValue={1} />
+        <Form.Item<any> label="Rooms Info" name="roomsInfo">
+          {renderRoomInfo()}
+          <Button onClick={() => setMaxRooms((prev) => prev + 1)}>
+            Add Room
+          </Button>
+          <Button
+            onClick={() =>
+              setMaxRooms((prev) => {
+                if (prev > 0) {
+                  return prev - 1;
+                }
+                return prev;
+              })
+            }
+          >
+            Remove Room
+          </Button>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading}>
