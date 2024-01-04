@@ -32,8 +32,8 @@ export async function POST(request: NextRequest) {
     const payload = await request.json();
     const command = CrawlerCommandZSchema.parse(payload);
     const crawlerJob = new CrawlerJob(command);
-    await crawlerJob.save();
-    return nextReturn("Command send successfully", 200, "OK");
+    const result = await crawlerJob.save();
+    return nextReturn(result.id, 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }
