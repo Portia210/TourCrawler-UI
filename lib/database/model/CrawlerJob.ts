@@ -6,9 +6,7 @@ const crawlerJobSchema = new mongoose.Schema(
     destination: Object,
     checkInDate: Date,
     checkOutDate: Date,
-    adult: Number,
-    children: Number,
-    rooms: Number,
+    guests: String,
     status: String, // PEDING, RUNNING, COMPELETED, FAILED
     assignedTo: String, // Worker ID
   },

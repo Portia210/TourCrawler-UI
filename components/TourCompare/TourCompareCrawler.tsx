@@ -5,6 +5,8 @@ import { Button, DatePicker, Form, notification } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import PlacesAutocomplete from "../PlacesAutocomplete";
+import { IRoomInfo } from "../types";
+import { convertRoomInfo } from "../utils/convertRoomInfo";
 import { crawlerCommandMapper } from "../utils/crawlerCommandMapper";
 import RoomSelection from "./RoomSelection";
 
@@ -13,15 +15,14 @@ const { RangePicker } = DatePicker;
 export default function TourCompareCrawler() {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
-  const [maxRooms, setMaxRooms] = useState(1);
-  const [rooms, setRooms] = useState<any[]>([]);
+  const [rooms, setRooms] = useState<IRoomInfo[]>([
+    { adults: 1, childrens: 0 },
+  ]);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAP_API_KEY,
     libraries: ["places"],
   });
-
-  if (!isLoaded) return <div>Loading...</div>;
 
   const disabledDate = (current: any) => {
     return current < dayjs().startOf("day");
@@ -29,7 +30,8 @@ export default function TourCompareCrawler() {
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
-      const payload = crawlerCommandMapper(values);
+      const guests = convertRoomInfo(rooms);
+      const payload = crawlerCommandMapper(values, guests);
       const response = await fetch("/api/jobs", {
         method: "POST",
         body: JSON.stringify(payload),
@@ -51,22 +53,43 @@ export default function TourCompareCrawler() {
     }
   };
 
-  const onRoomInfoChange = (value: any, index: number) => {};
-
-  const renderRoomInfo = () => {
-    return Array.from({ length: maxRooms }, (_, i) => i + 1).map(
-      (room, index) => (
-        <div key={index}>
-          <RoomSelection
-            room={rooms[index]}
-            roomNo={index + 1}
-            onChange={() => onRoomInfoChange(room, index)}
-          />
-        </div>
-      )
-    );
+  const onRoomInfoChange = (value: any, index: number) => {
+    setRooms((prev) => {
+      prev[index] = value;
+      return [...prev];
+    });
   };
 
+  const onAddRoom = () => {
+    setRooms((prev) => [...prev, { adults: 1, childrens: 0 }]);
+  };
+
+  const onRemoveRoom = (index: number) => {
+    if (rooms?.length === 1) return;
+    setRooms((prev) => {
+      prev.splice(index, 1);
+      return [...prev];
+    });
+  };
+
+  const renderRoomInfo = () => {
+    return rooms.map((room, index) => (
+      <div key={index}>
+        <div className="space-y-1 mb-1">
+          <RoomSelection
+            room={room}
+            roomNo={index}
+            onChange={(value, roomNo) => onRoomInfoChange(value, roomNo)}
+          />
+          <Button danger onClick={() => onRemoveRoom(index)}>
+            Remove Room
+          </Button>
+        </div>
+      </div>
+    ));
+  };
+
+  if (!isLoaded) return <p>Loading...</p>;
   return (
     <>
       {contextHolder}
@@ -108,20 +131,8 @@ export default function TourCompareCrawler() {
         </Form.Item>
         <Form.Item<any> label="Rooms Info" name="roomsInfo">
           {renderRoomInfo()}
-          <Button onClick={() => setMaxRooms((prev) => prev + 1)}>
+          <Button className="mt-2" onClick={() => onAddRoom()}>
             Add Room
-          </Button>
-          <Button
-            onClick={() =>
-              setMaxRooms((prev) => {
-                if (prev > 0) {
-                  return prev - 1;
-                }
-                return prev;
-              })
-            }
-          >
-            Remove Room
           </Button>
         </Form.Item>
         <Form.Item>

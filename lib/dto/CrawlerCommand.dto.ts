@@ -10,9 +10,7 @@ export const CrawlerCommandZSchema = z.object({
   }),
   checkInDate: z.string().pipe(z.coerce.date()),
   checkOutDate: z.string().pipe(z.coerce.date()),
-  adult: z.number(),
-  children: z.number(),
-  rooms: z.number(),
+  guests: z.string().optional(),
   status: z.string().optional().default("PENDING"),
   assignedTo: z.string().optional(),
 });

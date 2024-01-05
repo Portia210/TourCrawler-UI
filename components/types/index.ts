@@ -4,3 +4,8 @@ export interface ITourCompareDestination {
   lat?: number;
   lng?: number;
 }
+
+export interface IRoomInfo {
+  adults: number;
+  childrens: number;
+}

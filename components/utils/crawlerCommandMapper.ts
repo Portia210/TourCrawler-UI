@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-const crawlerCommandMapper = (values: any) => {
+const crawlerCommandMapper = (values: any, guests: string) => {
   const checkInDate = dayjs(values.checkin_checkout[0]).format("YYYY-MM-DD");
   const checkOutDate = dayjs(values.checkin_checkout[1]).format("YYYY-MM-DD");
   return {
@@ -11,6 +11,7 @@ const crawlerCommandMapper = (values: any) => {
     rooms: values?.rooms,
     adult: values?.adult,
     children: values?.children,
+    guests,
   };
 };
 export { crawlerCommandMapper };
