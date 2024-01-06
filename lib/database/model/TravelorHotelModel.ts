@@ -7,7 +7,6 @@ const travelorHotelSchema = new mongoose.Schema(
     picture_link: Object,
     travelor_link: String,
     price: Object,
-    rating: Number,
     stars: Number,
     country: Object,
     facilities: Object,

@@ -1,7 +1,9 @@
 import { InputNumber } from "antd";
+import { useState } from "react";
+import { IRoomInfo } from "../types";
 
 interface RoomSelectionProps {
-  room: any;
+  room: IRoomInfo;
   roomNo: number;
   onChange: (value: any, roomNo: number) => void;
 }
@@ -10,16 +12,39 @@ export default function RoomSelection({
   roomNo,
   onChange,
 }: RoomSelectionProps) {
+  const [noOfChild, setNoOfChild] = useState(0);
   const onAdultChange = (value: number | null) => {
     if (!value) return;
     room.adults = value;
     onChange(room, roomNo);
   };
-  const onChildrenChange = (value: number | null) => {
+  const onChangeNumberOfChildren = (value: number | null) => {
     if (!value) return;
-    room.childrens = value;
+    setNoOfChild(value);
+  };
+
+  const onChildrenAgeChange = (value: number | null, index: number) => {
+    if (!value) return;
+    room.childrens[index] = value;
     onChange(room, roomNo);
   };
+
+  const renderChildrenAgeInputs = () => {
+    return Array.from({ length: noOfChild || 0 }).map((_, index) => {
+      return (
+        <div key={index}>
+          <p>Child {`${index + 1}`} Age</p>
+          <InputNumber
+            min={0}
+            max={17}
+            value={room?.childrens[index]}
+            onChange={(e) => onChildrenAgeChange(e, index)}
+          />
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="border-black border-solid">
       <p>Room Number {`${roomNo + 1}`}</p>
@@ -28,7 +53,7 @@ export default function RoomSelection({
         <InputNumber
           className="w-full"
           min={1}
-          max={6}
+          max={10}
           value={room?.adults}
           onChange={(e) => onAdultChange(e)}
         />
@@ -38,10 +63,13 @@ export default function RoomSelection({
         <InputNumber
           className="w-full"
           min={0}
-          max={5}
-          value={room?.childrens}
-          onChange={(e) => onChildrenChange(e)}
+          max={10}
+          value={noOfChild}
+          onChange={(e) => onChangeNumberOfChildren(e)}
         />
+        <div className="flex space-x-1 flex-wrap">
+          {renderChildrenAgeInputs()}
+        </div>
       </div>
     </div>
   );

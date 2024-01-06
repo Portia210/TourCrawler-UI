@@ -14,8 +14,8 @@ const convertRoomInfo = (rooms: IRoomInfo[]): string => {
       adult += "a,";
     }
     let child = "";
-    for (let i = 0; i < childrens; i++) {
-      child += "10,";
+    for (let i = 0; i < childrens.length; i++) {
+      child += `${childrens[i]},`;
     }
     let roomInfo = `${adult}${child}`;
     if (roomInfo.endsWith(",")) roomInfo = roomInfo.slice(0, -1);

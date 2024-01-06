@@ -16,7 +16,7 @@ export default function TourCompareCrawler() {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
   const [rooms, setRooms] = useState<IRoomInfo[]>([
-    { adults: 1, childrens: 0 },
+    { adults: 1, childrens: [] },
   ]);
 
   const { isLoaded } = useLoadScript({
@@ -61,7 +61,7 @@ export default function TourCompareCrawler() {
   };
 
   const onAddRoom = () => {
-    setRooms((prev) => [...prev, { adults: 1, childrens: 0 }]);
+    setRooms((prev) => [...prev, { adults: 1, childrens: [] }]);
   };
 
   const onRemoveRoom = (index: number) => {
