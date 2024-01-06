@@ -1,6 +1,6 @@
 import { InputNumber } from "antd";
 import { useState } from "react";
-import { IRoomInfo } from "../types";
+import { IRoomInfo } from "../../types";
 
 interface RoomSelectionProps {
   room: IRoomInfo;

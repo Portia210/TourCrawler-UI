@@ -10,8 +10,9 @@ import PlacesBookingAutocomplete from "../AutoComplete/PlacesBookingAutocomplete
 import { IRoomInfo } from "../types";
 import { convertRoomInfo } from "../utils/convertRoomInfo";
 import { crawlerCommandMapper } from "../utils/crawlerCommandMapper";
+import ChildAgeInput from "./Booking/ChildAgeInput";
 import DatasourceOptions from "./DatasoureOptions";
-import RoomSelection from "./RoomSelection";
+import RoomSelection from "./Travelor/RoomSelection";
 
 const { RangePicker } = DatePicker;
 
@@ -21,6 +22,7 @@ export default function TourCompareCrawler() {
   const [rooms, setRooms] = useState<IRoomInfo[]>([
     { adults: 1, childrens: [] },
   ]);
+  const [childrenAges, setChildrenAges] = useState<number[]>([]);
   const [dataSource, setDataSource] = useState<DATA_SOURCES>(
     DATA_SOURCES.TRAVELOR
   );
@@ -37,7 +39,9 @@ export default function TourCompareCrawler() {
     try {
       setLoading(true);
       const guests = convertRoomInfo(rooms);
-      const payload = crawlerCommandMapper(values, guests);
+      values.guests = guests
+      values.childrenAges = childrenAges;
+      const payload = crawlerCommandMapper(values);
       const response = await fetch("/api/jobs", {
         method: "POST",
         body: JSON.stringify(payload),
@@ -102,6 +106,29 @@ export default function TourCompareCrawler() {
     );
   };
 
+  const onChildNumberChange = (value: number | null) => {
+    if (value === 0) {
+      setChildrenAges([]);
+      return;
+    }
+    if (!value) return;
+    setChildrenAges((prev) => {
+      const diff = value - prev.length;
+      if (diff > 0) {
+        return [...prev, ...Array(diff).fill(1)];
+      } else {
+        return prev.slice(0, value);
+      }
+    });
+  };
+
+  const onChildAgeChange = (age: number, index: number) => {
+    setChildrenAges((prev) => {
+      prev[index] = age;
+      return [...prev];
+    });
+  };
+
   const renderBookingRoomInfo = () => {
     return (
       <>
@@ -126,8 +153,17 @@ export default function TourCompareCrawler() {
             { required: true, message: "Please input number of Children!" },
           ]}
         >
-          <InputNumber className="w-full" min={0} max={10} />
+          <InputNumber
+            className="w-full"
+            onChange={(value) => onChildNumberChange(value)}
+            min={0}
+            max={10}
+          />
         </Form.Item>
+        <ChildAgeInput
+          noChild={childrenAges}
+          onChange={(age, index) => onChildAgeChange(age, index)}
+        />
       </>
     );
   };
