@@ -47,7 +47,7 @@ const bookingAutoComplete = async (
 const filterBookingResult = (result: BookingAutoCompleteResult) => {
   return {
     placeId: result?.dest_id,
-    label: result?.label,
+    address: result?.label,
     dest_type: result?.dest_type,
     lat: result?.latitude,
     lng: result?.longitude,

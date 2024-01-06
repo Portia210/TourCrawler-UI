@@ -11,9 +11,11 @@
   "dependencies": {
     "@reach/combobox": "^0.18.0",
     "@react-google-maps/api": "^2.19.2",
+    "@types/lodash": "^4.14.202",
     "antd": "^5.12.7",
     "axios": "^1.6.5",
     "dayjs": "^1.11.10",
+    "lodash": "^4.17.21",
     "mongoose": "^8.0.3",
     "next": "14.0.4",
     "react": "^18",

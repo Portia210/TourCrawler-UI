@@ -11,7 +11,7 @@ import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
-import { ITourCompareDestination } from "./types";
+import { ITourCompareDestination } from "../types";
 
 interface PlacesAutocompleteProps {
   value?: any;
@@ -26,7 +26,7 @@ const PlacesAutocomplete = (props: PlacesAutocompleteProps) => {
     clearSuggestions,
   } = usePlacesAutocomplete();
 
-  const handlePlaceClick = async (placeId: string, address: string) => {
+  const handleGooglePlaceClick = async (placeId: string, address: string) => {
     setValue(address, false);
     clearSuggestions();
     const results = await getGeocode({ address });
@@ -36,27 +36,35 @@ const PlacesAutocomplete = (props: PlacesAutocompleteProps) => {
     }
   };
 
+  const onInputChange = async (input: string) => {
+    setValue(input);
+  };
+
+  const travelorComboList = () => {
+    return (
+      <ComboboxList>
+        {status === "OK" &&
+          data.map(({ place_id, description }) => (
+            <ComboboxOption
+              key={place_id}
+              value={description}
+              onClick={() => handleGooglePlaceClick(place_id, description)}
+            />
+          ))}
+      </ComboboxList>
+    );
+  };
+
   return (
     <Combobox>
       <ComboboxInput
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => onInputChange(e.target.value)}
         disabled={!ready}
         className="w-1/2 p-2 rounded-md"
         placeholder="Search an address"
       />
-      <ComboboxPopover>
-        <ComboboxList>
-          {status === "OK" &&
-            data.map(({ place_id, description }) => (
-              <ComboboxOption
-                key={place_id}
-                value={description}
-                onClick={() => handlePlaceClick(place_id, description)}
-              />
-            ))}
-        </ComboboxList>
-      </ComboboxPopover>
+      <ComboboxPopover>{travelorComboList()}</ComboboxPopover>
     </Combobox>
   );
 };

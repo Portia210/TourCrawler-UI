@@ -5,7 +5,8 @@ import { useLoadScript } from "@react-google-maps/api";
 import { Button, DatePicker, Form, InputNumber, notification } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
-import PlacesAutocomplete from "../PlacesAutocomplete";
+import PlacesAutocomplete from "../AutoComplete/PlacesAutocomplete";
+import PlacesBookingAutocomplete from "../AutoComplete/PlacesBookingAutocomplete";
 import { IRoomInfo } from "../types";
 import { convertRoomInfo } from "../utils/convertRoomInfo";
 import { crawlerCommandMapper } from "../utils/crawlerCommandMapper";
@@ -163,7 +164,11 @@ export default function TourCompareCrawler() {
             { required: true, message: "Please input your destination!" },
           ]}
         >
-          <PlacesAutocomplete />
+          {dataSource === DATA_SOURCES.TRAVELOR ? (
+            <PlacesAutocomplete />
+          ) : (
+            <PlacesBookingAutocomplete />
+          )}
         </Form.Item>
 
         <Form.Item<any>
