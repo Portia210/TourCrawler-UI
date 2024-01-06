@@ -1,13 +1,15 @@
 "use client";
 import { GOOGLE_MAP_API_KEY } from "@/constants/config";
+import { DATA_SOURCES } from "@/constants/datasources";
 import { useLoadScript } from "@react-google-maps/api";
-import { Button, DatePicker, Form, notification } from "antd";
+import { Button, DatePicker, Form, InputNumber, notification } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
 import PlacesAutocomplete from "../PlacesAutocomplete";
 import { IRoomInfo } from "../types";
 import { convertRoomInfo } from "../utils/convertRoomInfo";
 import { crawlerCommandMapper } from "../utils/crawlerCommandMapper";
+import DatasourceOptions from "./DatasoureOptions";
 import RoomSelection from "./RoomSelection";
 
 const { RangePicker } = DatePicker;
@@ -18,6 +20,9 @@ export default function TourCompareCrawler() {
   const [rooms, setRooms] = useState<IRoomInfo[]>([
     { adults: 1, childrens: [] },
   ]);
+  const [dataSource, setDataSource] = useState<DATA_SOURCES>(
+    DATA_SOURCES.TRAVELOR
+  );
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAP_API_KEY,
@@ -72,21 +77,58 @@ export default function TourCompareCrawler() {
     });
   };
 
-  const renderRoomInfo = () => {
-    return rooms.map((room, index) => (
-      <div key={index}>
-        <div className="space-y-1 mb-1">
-          <RoomSelection
-            room={room}
-            roomNo={index}
-            onChange={(value, roomNo) => onRoomInfoChange(value, roomNo)}
-          />
-          <Button danger onClick={() => onRemoveRoom(index)}>
-            Remove Room
-          </Button>
-        </div>
-      </div>
-    ));
+  const renderTravelorRoomInfo = () => {
+    return (
+      <>
+        {rooms.map((room, index) => (
+          <div key={index}>
+            <div className="space-y-1 mb-1">
+              <RoomSelection
+                room={room}
+                roomNo={index}
+                onChange={(value, roomNo) => onRoomInfoChange(value, roomNo)}
+              />
+              <Button danger onClick={() => onRemoveRoom(index)}>
+                Remove Room
+              </Button>
+            </div>
+          </div>
+        ))}
+        <Button className="mt-2" onClick={() => onAddRoom()}>
+          Add Room
+        </Button>
+      </>
+    );
+  };
+
+  const renderBookingRoomInfo = () => {
+    return (
+      <>
+        <Form.Item<any>
+          label="No of Rooms"
+          name="rooms"
+          rules={[{ required: true, message: "Please input number of room!" }]}
+        >
+          <InputNumber className="w-full" min={1} max={30} />
+        </Form.Item>
+        <Form.Item<any>
+          label="No of Adult"
+          name="adult"
+          rules={[{ required: true, message: "Please input number of Adult!" }]}
+        >
+          <InputNumber className="w-full" min={1} max={30} />
+        </Form.Item>
+        <Form.Item<any>
+          label="No of Children"
+          name="children"
+          rules={[
+            { required: true, message: "Please input number of Children!" },
+          ]}
+        >
+          <InputNumber className="w-full" min={0} max={10} />
+        </Form.Item>
+      </>
+    );
   };
 
   if (!isLoaded) return <p>Loading...</p>;
@@ -103,6 +145,17 @@ export default function TourCompareCrawler() {
         labelAlign="left"
         className="w-1/2 border-solid border-1 border-black p-2 rounded-lg"
       >
+        <Form.Item<any>
+          label="Datasource"
+          name="dataSource"
+          rules={[{ required: true, message: "Please input the datasource!" }]}
+        >
+          <DatasourceOptions
+            value={dataSource}
+            onChange={(val) => setDataSource(val)}
+          />
+        </Form.Item>
+
         <Form.Item<any>
           label="Destination"
           name="destination"
@@ -130,10 +183,9 @@ export default function TourCompareCrawler() {
           />
         </Form.Item>
         <Form.Item<any> label="Rooms Info" name="roomsInfo">
-          {renderRoomInfo()}
-          <Button className="mt-2" onClick={() => onAddRoom()}>
-            Add Room
-          </Button>
+          {dataSource === DATA_SOURCES.TRAVELOR
+            ? renderTravelorRoomInfo()
+            : renderBookingRoomInfo()}
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading}>

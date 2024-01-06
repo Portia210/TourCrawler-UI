@@ -1,5 +1,4 @@
 "use client";
-import { GOOGLE_MAP_API_KEY } from "@/constants/config";
 import {
   Combobox,
   ComboboxInput,
@@ -8,7 +7,6 @@ import {
   ComboboxPopover,
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
-import { useLoadScript } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
@@ -27,11 +25,6 @@ const PlacesAutocomplete = (props: PlacesAutocompleteProps) => {
     suggestions: { status, data },
     clearSuggestions,
   } = usePlacesAutocomplete();
-
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: GOOGLE_MAP_API_KEY,
-    libraries: ["places"],
-  });
 
   const handlePlaceClick = async (placeId: string, address: string) => {
     setValue(address, false);
