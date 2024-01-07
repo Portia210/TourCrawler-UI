@@ -23,11 +23,12 @@ const PlacesBookingAutocomplete = (props: PlacesBookingAutocompleteProps) => {
   const handleBookingPlaceClick = async (
     placeId: string,
     address: string,
-    lat = 0,
-    lng = 0
+    dest_type: string,
+    lat: number,
+    lng: number
   ) => {
     if (props?.onChange) {
-      props.onChange({ placeId, destination: address, lat, lng });
+      props.onChange({ placeId, destination: address, dest_type, lat, lng });
     }
   };
 
@@ -44,11 +45,13 @@ const PlacesBookingAutocomplete = (props: PlacesBookingAutocompleteProps) => {
   const bookingComboList = () => {
     return (
       <ComboboxList>
-        {places?.map(({ placeId, address, lat, lng }) => (
+        {places?.map(({ placeId, address, dest_type, lat, lng }) => (
           <ComboboxOption
             key={placeId}
             value={address}
-            onClick={() => handleBookingPlaceClick(placeId, address, lat, lng)}
+            onClick={() =>
+              handleBookingPlaceClick(placeId, address, dest_type, lat, lng)
+            }
           />
         ))}
       </ComboboxList>
