@@ -9,6 +9,11 @@ const options = [
   {
     value: DATA_SOURCES.BOOKING,
     label: "Booking",
+    disabled: true,
+  },
+  {
+    value: DATA_SOURCES.ALL,
+    label: "All",
   },
 ];
 interface DatasourceOptionsProps {
@@ -22,12 +27,7 @@ export default function DatasourceOptions({
 }: DatasourceOptionsProps) {
   return (
     <>
-      <Select
-        value={value}
-        defaultValue={DATA_SOURCES.TRAVELOR}
-        onChange={onChange}
-        options={options}
-      />
+      <Select value={value} onChange={onChange} options={options} />
     </>
   );
 }

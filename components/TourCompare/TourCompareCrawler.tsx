@@ -1,6 +1,7 @@
 "use client";
 import { GOOGLE_MAP_API_KEY } from "@/constants/config";
 import { DATA_SOURCES } from "@/constants/datasources";
+import useTourCompare from "@/hooks/useTourCompare";
 import { useLoadScript } from "@react-google-maps/api";
 import { Button, DatePicker, Form, InputNumber, notification } from "antd";
 import dayjs from "dayjs";
@@ -8,8 +9,6 @@ import { useState } from "react";
 import PlacesAutocomplete from "../AutoComplete/PlacesAutocomplete";
 import PlacesBookingAutocomplete from "../AutoComplete/PlacesBookingAutocomplete";
 import { IRoomInfo } from "../types";
-import { convertRoomInfo } from "../utils/convertRoomInfo";
-import { crawlerCommandMapper } from "../utils/crawlerCommandMapper";
 import ChildAgeInput from "./Booking/ChildAgeInput";
 import DatasourceOptions from "./DatasoureOptions";
 import RoomSelection from "./Travelor/RoomSelection";
@@ -18,37 +17,25 @@ const { RangePicker } = DatePicker;
 
 export default function TourCompareCrawler() {
   const [api, contextHolder] = notification.useNotification();
-  const [loading, setLoading] = useState(false);
+  const { loading, onSendCommandByDataSource } = useTourCompare();
   const [rooms, setRooms] = useState<IRoomInfo[]>([
     { adults: 1, childrens: [] },
   ]);
   const [childrenAges, setChildrenAges] = useState<number[]>([]);
-  const [dataSource, setDataSource] = useState<DATA_SOURCES>(
-    DATA_SOURCES.TRAVELOR
-  );
+  const [dataSource, setDataSource] = useState<DATA_SOURCES>(DATA_SOURCES.ALL);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAP_API_KEY,
     libraries: ["places"],
   });
 
-  const disabledDate = (current: any) => {
-    return current < dayjs().startOf("day");
-  };
   const onFinish = async (values: any) => {
     try {
-      setLoading(true);
-      const guests = convertRoomInfo(rooms);
-      values.guests = guests
-      values.childrenAges = childrenAges;
-      const payload = crawlerCommandMapper(values);
-      const response = await fetch("/api/jobs", {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => res.json());
+      const response = await onSendCommandByDataSource(
+        dataSource,
+        values,
+        rooms
+      );
       api.success({
         message: "Send command successfully",
         description: `Job ID: ${response}`,
@@ -58,8 +45,6 @@ export default function TourCompareCrawler() {
       api.error({
         message: "Send command failed",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -200,10 +185,10 @@ export default function TourCompareCrawler() {
             { required: true, message: "Please input your destination!" },
           ]}
         >
-          {dataSource === DATA_SOURCES.TRAVELOR ? (
-            <PlacesAutocomplete />
-          ) : (
+          {dataSource === DATA_SOURCES.BOOKING ? (
             <PlacesBookingAutocomplete />
+          ) : (
+            <PlacesAutocomplete />
           )}
         </Form.Item>
 
@@ -218,15 +203,15 @@ export default function TourCompareCrawler() {
           ]}
         >
           <RangePicker
-            disabledDate={disabledDate}
+            disabledDate={(current) => current < dayjs().startOf("day")}
             size="middle"
             className="w-full"
           />
         </Form.Item>
         <Form.Item<any> label="Rooms Info" name="roomsInfo">
-          {dataSource === DATA_SOURCES.TRAVELOR
-            ? renderTravelorRoomInfo()
-            : renderBookingRoomInfo()}
+          {dataSource === DATA_SOURCES.BOOKING
+            ? renderBookingRoomInfo()
+            : renderTravelorRoomInfo()}
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading}>

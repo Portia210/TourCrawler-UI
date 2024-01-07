@@ -25,4 +25,19 @@ const convertRoomInfo = (rooms: IRoomInfo[]): string => {
   return `${result.join("|")}`;
 };
 
-export { convertRoomInfo };
+/**
+ * Convert room's info to guests (Travelor, Booking)
+ * @param roomInfoIB
+ */
+const convertRoomInfoTB = (rooms: IRoomInfo[]) => {
+  const guests = convertRoomInfo(rooms);
+  const childrenAges = rooms.map((room) => room.childrens).flat();
+  const roomInfoTb = {
+    guests,
+    rooms: rooms.length,
+    adult: rooms.reduce((acc, cur) => acc + cur.adults, 1),
+    childrenAges,
+  };
+  return roomInfoTb;
+};
+export { convertRoomInfo, convertRoomInfoTB };

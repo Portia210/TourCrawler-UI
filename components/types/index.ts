@@ -8,5 +8,5 @@ export interface ITourCompareDestination {
 
 export interface IRoomInfo {
   adults: number;
-  childrens: any[];
+  childrens: number[];
 }
