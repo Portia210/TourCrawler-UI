@@ -27,6 +27,7 @@ export default function TourCompareCrawler() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAP_API_KEY,
     libraries: ["places"],
+    region: "US",
   });
 
   const onFinish = async (values: any) => {

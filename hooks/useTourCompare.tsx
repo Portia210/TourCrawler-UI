@@ -1,4 +1,5 @@
 import { IRoomInfo } from "@/components/types";
+import { autoSelectPlace } from "@/components/utils/autoSelectPlace";
 import { convertRoomInfoTB } from "@/components/utils/convertRoomInfo";
 import { crawlerCommandMapper } from "@/components/utils/crawlerCommandMapper";
 import { DATA_SOURCES } from "@/constants/datasources";
@@ -45,7 +46,14 @@ const useTourCompare = () => {
   };
 
   const onSendBookingCommand = async (payload: any, roomInfoTb: any) => {
+    console.log("payload.destination", payload.destination);
     let values: any = cloneDeep(payload);
+    if (values.dataSource === DATA_SOURCES.ALL) {
+      values.destination = await autoSelectPlace(
+        payload?.destination?.destination
+      );
+    }
+    console.log("values.destination", values.destination);
     values.dataSource = DATA_SOURCES.BOOKING;
     values.rooms = roomInfoTb.rooms;
     values.adult = roomInfoTb.adult;
