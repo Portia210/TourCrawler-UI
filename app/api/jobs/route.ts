@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import connectMongoDB from "@/lib/database/client";
 import CrawlerJob from "@/lib/database/model/CrawlerJob";
 import { CrawlerCommandZSchema } from "@/lib/dto/CrawlerCommand.dto";
@@ -8,6 +9,7 @@ import { NextRequest } from "next/server";
  * Get jobs
  */
 export async function GET(request: NextRequest) {
+  noStore();
   try {
     await connectMongoDB();
     const jobs = await CrawlerJob.findOne({

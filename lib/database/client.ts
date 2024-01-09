@@ -8,7 +8,7 @@ if (!DATABASE_URL) {
 
 let cachedConnection: any = null;
 
-const connectMongoDB = async () => {
+const connectMongoDB = async (): Promise<typeof mongoose> => {
   if (cachedConnection) return cachedConnection;
   try {
     const connection = await mongoose.connect(DATABASE_URL);
