@@ -18,8 +18,21 @@ class AnalyticsService {
       (totalBookingCheaperHotels / totalResults) * 100;
     const travelorCheaperHotelsInPercentage =
       100 - bookingCheaperHotelsInPercentage;
-
+    const avgPriceDifference =
+      results.reduce((acc, hotel) => acc + Number(hotel.price_difference), 0) /
+      totalResults;
+    const minPriceDifference = Math.min(
+      ...results.map((hotel) => Number(hotel.price_difference))
+    );
+    const maxPriceDifference = Math.max(
+      ...results.map((hotel) => Number(hotel.price_difference))
+    );
+    const currency = DEFAULT_CURRENCY;
     return {
+      currency,
+      avgPriceDifference,
+      minPriceDifference,
+      maxPriceDifference,
       totalBookingCheaperHotels,
       bookingCheaperHotelsInPercentage,
       travelorCheaperHotelsInPercentage,
