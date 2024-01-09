@@ -15,7 +15,7 @@ export const filters = (bookingJobId: string, travelorJobId: string) => [
   {
     $match: {
       matchedHotels: { $exists: true },
-      createdAt: { $lte: new Date() },
+      // createdAt: { $gte: new Date() },
       "matchedHotels.jobId": { $eq: travelorJobId },
       jobId: { $eq: bookingJobId },
     },
