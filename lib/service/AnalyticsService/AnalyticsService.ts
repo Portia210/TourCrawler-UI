@@ -9,10 +9,10 @@ class AnalyticsService {
     const results = await this.compare(bookingJobId, travelorJobId);
     const totalResults = results.length;
     const totalBookingCheaperHotels = results.filter(
-      (hotel) => Number(hotel.price_difference) < 0
+      (hotel) => Number(hotel.price_difference) > 0
     ).length;
     const totalTravelorCheaperHotels = results.filter(
-      (hotel) => Number(hotel.price_difference) > 0
+      (hotel) => Number(hotel.price_difference) < 0
     ).length;
     const bookingCheaperHotelsInPercentage =
       (totalBookingCheaperHotels / totalResults) * 100;
