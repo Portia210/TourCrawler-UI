@@ -11,8 +11,19 @@ export async function POST(request: NextRequest) {
   try {
     await connectMongoDB();
     const payload = await request.json();
-    const result = await analyticsService.compare();
-    return nextReturn(result, 200, "OK");
+    const { bookingJobId, travelorJobId } = payload;
+    if (!bookingJobId || !travelorJobId) {
+      return nextReturn(
+        "Missing bookingJobId or travelorJobId",
+        400,
+        "BAD_REQUEST"
+      );
+    }
+    const analytics = await analyticsService.analytics(
+      bookingJobId,
+      travelorJobId
+    );
+    return nextReturn(analytics, 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }

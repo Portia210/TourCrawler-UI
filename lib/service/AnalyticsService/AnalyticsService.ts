@@ -5,9 +5,33 @@ import { filters } from "./config";
 import { HotelAggregateResult } from "./types";
 
 class AnalyticsService {
-  async compare() {
+  async analytics(bookingJobId: string, travelorJobId: string) {
+    const results = await this.compare(bookingJobId, travelorJobId);
+    const totalResults = results.length;
+    const totalBookingCheaperHotels = results.filter(
+      (hotel) => Number(hotel.price_difference) < 0
+    ).length;
+    const totalTravelorCheaperHotels = results.filter(
+      (hotel) => Number(hotel.price_difference) > 0
+    ).length;
+    const bookingCheaperHotelsInPercentage =
+      (totalBookingCheaperHotels / totalResults) * 100;
+    const travelorCheaperHotelsInPercentage =
+      100 - bookingCheaperHotelsInPercentage;
+
+    return {
+      totalBookingCheaperHotels,
+      bookingCheaperHotelsInPercentage,
+      travelorCheaperHotelsInPercentage,
+      totalTravelorCheaperHotels,
+      totalResults,
+      results,
+    };
+  }
+
+  private async compare(bookingJobId: string, travelorJobId: string) {
     const results: HotelAggregateResult[] = await BookingHotel.aggregate(
-      filters
+      filters(bookingJobId, travelorJobId)
     );
     return await this.filterResults(results);
   }
@@ -30,7 +54,9 @@ class AnalyticsService {
           travelorPrice
         );
         travelorCurrency = DEFAULT_CURRENCY;
-        const price_difference = Number(bookingPrice) - Number(travelorPrice);
+        const price_difference = (
+          Number(bookingPrice) - Number(travelorPrice)
+        ).toFixed(2);
         return {
           ...result,
           bookingCurrency,

@@ -1,4 +1,4 @@
-export const filters = [
+export const filters = (bookingJobId: string, travelorJobId: string) => [
   {
     $lookup: {
       from: "travelorhotels",
@@ -14,9 +14,10 @@ export const filters = [
   },
   {
     $match: {
-      matchedHotels: {
-        $exists: true,
-      },
+      matchedHotels: { $exists: true },
+      createdAt: { $lte: new Date() },
+      "matchedHotels.jobId": { $eq: travelorJobId },
+      jobId: { $eq: bookingJobId },
     },
   },
   {
