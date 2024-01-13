@@ -5,9 +5,19 @@ import { filters } from "./config";
 import { HotelAggregateResult } from "./types";
 
 class AnalyticsService {
-  async analytics(bookingJobId: string, travelorJobId: string) {
+  async analytics(
+    bookingJobId: string,
+    travelorJobId: string,
+    simpleReport = true
+  ) {
     const results = await this.compare(bookingJobId, travelorJobId);
     const totalResults = results.length;
+    if (simpleReport) {
+      return {
+        totalResults,
+        results,
+      };
+    }
     const totalBookingCheaperHotels = results.filter(
       (hotel) => Number(hotel.price_difference) > 0
     ).length;
