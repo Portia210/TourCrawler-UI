@@ -1,7 +1,7 @@
 import connectMongoDB from "@/lib/database/client";
-import CrawlerJob from "@/lib/database/model/CrawlerJob";
+import CrawlerJob from "@/lib/database/model/CrawlerJobModel";
 import { CrawlerCommandZSchema } from "@/lib/dto/CrawlerCommand.dto";
-import { nextReturn } from "@/utils/api";
+import { nextReturn } from "@/lib/utils/api";
 import mongoose from "mongoose";
 import { NextRequest } from "next/server";
 

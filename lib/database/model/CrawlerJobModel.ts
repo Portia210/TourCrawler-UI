@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const crawlerJobSchema = new mongoose.Schema(
   {
     dataSource: String, // Travelor or Booking
+    sessionId: String,
     destination: Object,
     checkInDate: Date,
     checkOutDate: Date,

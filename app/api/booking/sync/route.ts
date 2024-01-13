@@ -1,6 +1,6 @@
 import connectMongoDB from "@/lib/database/client";
 import BookingHotel from "@/lib/database/model/BookingHotelModel";
-import { nextReturn } from "@/utils/api";
+import { nextReturn } from "@/lib/utils/api";
 import { NextRequest } from "next/server";
 
 /**

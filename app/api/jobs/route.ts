@@ -1,8 +1,8 @@
-import { unstable_noStore as noStore } from "next/cache";
 import connectMongoDB from "@/lib/database/client";
-import CrawlerJob from "@/lib/database/model/CrawlerJob";
+import CrawlerJob from "@/lib/database/model/CrawlerJobModel";
 import { CrawlerCommandZSchema } from "@/lib/dto/CrawlerCommand.dto";
-import { nextReturn } from "@/utils/api";
+import { nextReturn } from "@/lib/utils/api";
+import { unstable_noStore as noStore } from "next/cache";
 import { NextRequest } from "next/server";
 
 /**
@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * Create job
+ * @deprecated use POST /api/jobs/session
  */
 export async function POST(request: NextRequest) {
   try {
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     const command = CrawlerCommandZSchema.parse(payload);
     const crawlerJob = new CrawlerJob(command);
     const result = await crawlerJob.save();
-    return nextReturn(result.id, 200, "OK");
+    return nextReturn(result.sessionId, 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }

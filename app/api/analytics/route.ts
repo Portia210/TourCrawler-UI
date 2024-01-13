@@ -1,6 +1,6 @@
 import connectMongoDB from "@/lib/database/client";
 import analyticsService from "@/lib/service/AnalyticsService/AnalyticsService";
-import { nextReturn } from "@/utils/api";
+import { nextReturn } from "@/lib/utils/api";
 import { NextRequest } from "next/server";
 
 /**

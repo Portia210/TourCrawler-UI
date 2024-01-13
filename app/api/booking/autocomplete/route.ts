@@ -1,6 +1,8 @@
-import { BookingAutoCompleteResult } from "@/lib/responseMapper/bookingAutocomplete";
-import { nextReturn } from "@/utils/api";
-import axios from "axios";
+import { nextReturn } from "@/lib/utils/api";
+import {
+  bookingAutoComplete,
+  filterBookingResult,
+} from "@/lib/utils/bookingAutoComplete";
 import { NextRequest } from "next/server";
 
 /**
@@ -27,29 +29,3 @@ export async function POST(request: NextRequest) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }
 }
-
-const bookingAutoComplete = async (
-  query: string,
-  language = "en",
-  size: number = 5
-): Promise<BookingAutoCompleteResult[]> => {
-  const url = `https://accommodations.booking.com/autocomplete.json`;
-  const response = await axios
-    .post(url, {
-      query,
-      language,
-      size,
-    })
-    .then((res) => res?.data);
-  return response?.results || [];
-};
-
-const filterBookingResult = (result: BookingAutoCompleteResult) => {
-  return {
-    placeId: result?.dest_id,
-    address: result?.label,
-    dest_type: result?.dest_type,
-    lat: result?.latitude,
-    lng: result?.longitude,
-  };
-};
