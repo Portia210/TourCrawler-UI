@@ -10,4 +10,5 @@ export interface HotelAggregateResult {
   travelorCurrency: string;
   travelorLink: string;
   bookingLink: string;
+  picture_link: string;
 }
