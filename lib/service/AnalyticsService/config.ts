@@ -28,7 +28,7 @@ export const filters = (bookingJobId: string, travelorJobId: string) => [
       stars: "$stars",
       rate: "$rate",
       picture_link: "$matchedHotels.picture_link",
-      travelorPrice: "$matchedHotels.price.amount",
+      travelorPrice: "$matchedHotels.price.exclusive",
       bookingPrice: "$price.amountUnformatted",
       bookingCurrency: "$price.currency",
       travelorCurrency: "$matchedHotels.price.currency",

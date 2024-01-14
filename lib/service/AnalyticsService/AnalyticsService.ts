@@ -59,9 +59,11 @@ class AnalyticsService {
     return await this.filterResults(results);
   }
 
-  private async filterResults(results: HotelAggregateResult[]): Promise<any[]> {
-    return await Promise.all(
-      results.map(async (result) => {
+  private async filterResults(
+    hotelResults: HotelAggregateResult[]
+  ): Promise<any[]> {
+    const results = await Promise.all(
+      hotelResults.map(async (result) => {
         let { bookingCurrency, bookingPrice, travelorCurrency, travelorPrice } =
           result;
         bookingPrice = await currencyService.convertCurrency(
@@ -80,6 +82,10 @@ class AnalyticsService {
         const price_difference = (
           Number(bookingPrice) - Number(travelorPrice)
         ).toFixed(2);
+        // Todo: remove this in the future
+        if (Number(bookingPrice) - Number(travelorPrice) < 0) {
+          return;
+        }
         return {
           ...result,
           bookingCurrency,
@@ -90,6 +96,7 @@ class AnalyticsService {
         };
       })
     );
+    return results.filter(Boolean);
   }
 }
 
