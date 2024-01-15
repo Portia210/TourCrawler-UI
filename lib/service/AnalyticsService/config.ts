@@ -28,7 +28,7 @@ export const filters = (bookingJobId: string, travelorJobId: string) => [
       // Use $first to select the first occurrence of each title
       distance: { $first: "$distance" },
       title: { $first: "$title" },
-      stars: { $first: "$stars" },
+      stars: { $first: "$matchedHotels.stars" },
       rate: { $first: "$rate" },
       picture_link: { $first: "$matchedHotels.picture_link" },
       travelorPrice: { $first: "$matchedHotels.price.amount" },
