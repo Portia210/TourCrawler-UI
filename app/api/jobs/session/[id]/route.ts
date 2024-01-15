@@ -24,6 +24,11 @@ export async function GET(request: NextRequest, context: any) {
       return nextReturn("Job not found", 404, "NOT_FOUND");
     if (bookingJob.status === "FINISHED" && travelorJob.status === "FINISHED") {
       status = bookingJob.status;
+    } else if (
+      bookingJob.status === "FAILED" ||
+      travelorJob.status === "FAILED"
+    ) {
+      status = "FAILED";
     }
     let analytics = await analyticsService.analytics(
       bookingJobId,
