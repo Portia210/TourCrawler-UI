@@ -1,6 +1,7 @@
 import { nextReturn } from "@/lib/utils/api";
 import {
   bookingAutoComplete,
+  bookingAutoCompleteV2,
   filterBookingResult,
 } from "@/lib/utils/bookingAutoComplete";
 import { NextRequest } from "next/server";
@@ -14,11 +15,7 @@ export async function POST(request: NextRequest) {
     if (!body?.destination)
       return nextReturn("Destimation is required", 400, "BAD_REQUEST");
     // await connectMongoDB();
-    const result = await bookingAutoComplete(
-      body.destination,
-      body?.language,
-      body?.size
-    );
+    const result = await bookingAutoCompleteV2(body.destination);
 
     return nextReturn(
       result.map((item) => filterBookingResult(item)),

@@ -90,8 +90,8 @@ class AnalyticsService {
           ...result,
           bookingCurrency,
           travelorCurrency,
-          bookingPrice,
-          travelorPrice,
+          bookingPrice: Math.round(Number(bookingPrice)),
+          travelorPrice: Math.round(Number(travelorPrice)),
           price_difference,
         };
       })

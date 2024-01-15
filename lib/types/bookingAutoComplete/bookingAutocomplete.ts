@@ -4,7 +4,9 @@ export interface BookingAutoCompleteResult {
   cc1: string;
   cjk: boolean;
   dest_id: string;
+  placeId: string;
   dest_type: string;
+  destType: string;
   label: string;
   label1: string;
   label2: string;
@@ -19,6 +21,7 @@ export interface BookingAutoCompleteResult {
   roundtrip: string;
   rtl: boolean;
   value: string;
+  place: any;
 }
 
 export interface BMaxLosData {
