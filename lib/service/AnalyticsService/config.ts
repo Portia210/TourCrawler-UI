@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const filters = (bookingJobId: string, travelorJobId: string) => [
   {
     $lookup: {
@@ -15,7 +17,7 @@ export const filters = (bookingJobId: string, travelorJobId: string) => [
   {
     $match: {
       matchedHotels: { $exists: true },
-      // createdAt: { $gte: new Date() },
+      createdAt: { $gte: dayjs().subtract(1, "day").toDate() },
       "matchedHotels.jobId": { $eq: travelorJobId },
       jobId: { $eq: bookingJobId },
     },

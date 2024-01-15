@@ -24,7 +24,6 @@ const bookingAutoComplete = async (
 const bookingAutoCompleteV2 = async (
   query: string
 ): Promise<BookingAutoCompleteResult[]> => {
-  console.log("bookingAutoCompleteV2");
   const url = `https://www.booking.com/dml/graphql`;
   let variables = bookingVariables;
   variables.input.searchString = query;
