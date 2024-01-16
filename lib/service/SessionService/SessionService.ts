@@ -36,6 +36,14 @@ class SessionService {
     }
   }
 
+  async checkIfSessionExist(sessionInput: SessionInputDto): Promise<string> {
+    const session = await SessionInput.findOne({
+      ...sessionInput,
+      createdAt: { $gt: dayjs().subtract(1, "day").toDate() },
+    }).exec();
+    return session?._id;
+  }
+
   async cleanUp(): Promise<number> {
     return (await mongoose.startSession()).withTransaction(async (session) => {
       let totalRemoved = 0;

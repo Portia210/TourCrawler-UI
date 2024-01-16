@@ -23,7 +23,7 @@ const nextReturn = (
         payload?.response?.data?.message ||
         payload?.message;
       payload = errorMgs;
-    } else if (payload instanceof Error) {
+    } else {
       errorMgs = JSON.stringify(payload);
     }
     console.error("nextReturn error", errorMgs);
