@@ -1,7 +1,17 @@
 import express from "express";
 import cron from "node-cron";
 import axios from "axios";
+import axiosRetry from "axios-retry";
 require("dotenv").config();
+
+axiosRetry(axios, {
+  retries: 5,
+  retryDelay: (...arg) => axiosRetry.exponentialDelay(...arg, 5000),
+  onRetry(retryCount, err) {
+    console.error("api call failed, retrying...", err.toJSON());
+    console.log(`Retry attempt #${retryCount}`);
+  },
+});
 
 const app = express();
 const port = process.env.PORT || 3003;
@@ -16,9 +26,10 @@ const cleanOldData = () => {
     });
 };
 
-const schedule = "0 0 0 * * *";
+const schedule = "0 0 0 * * *"; // every day at midnight
+const schedule2 = "*/15 * * * * *"; // every 15 seconds for testing
 
-cron.schedule("*/15 * * * * *", function () {
+cron.schedule(schedule2, function () {
   console.log("---------------------");
   console.log("Cleaning old data");
   cleanOldData();
