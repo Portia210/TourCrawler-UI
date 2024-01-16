@@ -40,6 +40,11 @@ export const filters = (bookingJobId: string, travelorJobId: string) => [
     },
   },
   {
+    $sort: {
+      travelorPrice: -1, // Sort in descending order
+    },
+  },
+  {
     $project: {
       _id: 0,
       title: 1,

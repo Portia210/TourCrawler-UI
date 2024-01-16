@@ -41,7 +41,7 @@ class SessionService {
       ...sessionInput,
       createdAt: { $gt: dayjs().subtract(1, "day").toDate() },
     }).exec();
-    return session?._id;
+    return session?._id || null;
   }
 
   async cleanUp(): Promise<number> {
