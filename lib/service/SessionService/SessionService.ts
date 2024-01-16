@@ -24,46 +24,45 @@ class SessionService {
       const result = await sessionInputSearch.save({
         session: mongooseSession,
       });
-      await mongooseSession.commitTransaction();
       return result._id;
     } catch (err) {
       console.error("createSession", err);
       await mongooseSession.abortTransaction();
+      await mongooseSession.endSession(); // Close the session in case of an error
       throw err;
+    } finally {
+      await mongooseSession.commitTransaction();
+      await mongooseSession.endSession(); // Close the session in any case
     }
   }
 
   async cleanUp(): Promise<number> {
-    const mongooseSession = await mongoose.startSession();
-    mongooseSession.startTransaction();
-    try {
+    return (await mongoose.startSession()).withTransaction(async (session) => {
       let totalRemoved = 0;
-      const oldSessions = await SessionInput.find(
-        {
-          createdAt: { $lt: dayjs().subtract(1, "day").toDate() },
-        },
-        null,
-        { session: mongooseSession }
+      const oldSessions = await SessionInput.find({
+        createdAt: { $lt: dayjs().subtract(1, "day").toDate() },
+      }).session(session);
+
+      if (!oldSessions.length) return totalRemoved;
+
+      await Promise.all(
+        oldSessions.map(async (oldSession) => {
+          const bookingDeleteResult = await BookingHotel.deleteMany(
+            { jobId: oldSession.bookingJobId },
+            { session }
+          );
+          const travelorDeleteResult = await TravelorHotel.deleteMany(
+            { jobId: oldSession.travelorJobId },
+            { session }
+          );
+          totalRemoved +=
+            travelorDeleteResult.deletedCount +
+            bookingDeleteResult.deletedCount;
+        })
       );
-      const oldSession = oldSessions[0];
-      const results = await Promise.all([
-        BookingHotel.deleteMany(
-          { jobId: oldSession.bookingJobId },
-          { session: mongooseSession }
-        ),
-        TravelorHotel.deleteMany(
-          { jobId: oldSession.travelorJobId },
-          { session: mongooseSession }
-        ),
-      ]);
-      totalRemoved = results[0].deletedCount + results[1].deletedCount;
-      await mongooseSession.commitTransaction();
+
       return totalRemoved;
-    } catch (err) {
-      console.error("cleanUp error -->", err);
-      await mongooseSession.abortTransaction();
-      throw err;
-    }
+    });
   }
 }
 
