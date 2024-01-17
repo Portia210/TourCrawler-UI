@@ -45,7 +45,7 @@ class SessionService {
     }).exec();
     return session?._id || null;
   }
-  async getSessionResult(id: string, currency: string) {
+  async getSessionResult(id: string) {
     const sessionInput = await SessionInput.findById(id).exec();
     if (!sessionInput) throw new Error("Session not found");
 
@@ -69,8 +69,7 @@ class SessionService {
 
     const analytics = await analyticsService.compare(
       bookingJobId,
-      travelorJobId,
-      currency
+      travelorJobId
     );
 
     return {
