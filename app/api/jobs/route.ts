@@ -12,14 +12,14 @@ export async function GET(request: NextRequest) {
   noStore();
   try {
     await connectMongoDB();
-    const jobs = await CrawlerJob.findOne({
+    const jobs = await CrawlerJob.find({
       status: {
         $eq: "PENDING",
       },
     })
       .sort({ created_at: -1 })
       .exec();
-    return nextReturn([jobs].filter(Boolean), 200, "OK");
+    return nextReturn(jobs.filter(Boolean), 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }

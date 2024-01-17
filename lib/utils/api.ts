@@ -19,12 +19,12 @@ const nextReturn = (
     let errorMgs = "";
     if (isAxiosError(payload)) {
       errorMgs =
-        payload?.response?.data ||
         payload?.response?.data?.message ||
+        payload?.response?.data ||
         payload?.message;
       payload = errorMgs;
     } else {
-      errorMgs = JSON.stringify(payload);
+      errorMgs = payload;
     }
     console.error("nextReturn error", errorMgs);
   }
