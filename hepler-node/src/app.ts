@@ -1,7 +1,7 @@
-import express from "express";
-import cron from "node-cron";
 import axios from "axios";
 import axiosRetry from "axios-retry";
+import express from "express";
+import cron from "node-cron";
 require("dotenv").config();
 
 axiosRetry(axios, {
@@ -18,6 +18,7 @@ const port = process.env.PORT || 3003;
 const crawlerUrl = process.env.CRAWLERUI_URL || "http://localhost:3001";
 
 const cleanOldData = () => {
+  console.log("Cleaning old data");
   axios
     .post(`${crawlerUrl}/api/jobs/session/cleanup`, {})
     .then((response) => console.log("cleanOldData response::", response.data))
@@ -26,13 +27,25 @@ const cleanOldData = () => {
     });
 };
 
-const schedule = "0 0 0 * * *"; // every day at midnight
-const schedule2 = "*/15 * * * * *"; // every 15 seconds for testing
+const updateCurrencies = () => {
+  console.log("Updating currencies");
+  axios
+    .post(`${crawlerUrl}/api/currency`, {})
+    .then((response) =>
+      console.log("updateCurrencies response::", response.data)
+    )
+    .catch((error) => {
+      console.error("updateCurrencies error::", error);
+    });
+};
 
-cron.schedule(schedule2, function () {
+const schedule = "0 0 0 * * *"; // every day at midnight
+const schedule2 = "*/30 * * * * *"; // every 30 seconds for testing
+
+cron.schedule(schedule, function () {
   console.log("---------------------");
-  console.log("Cleaning old data");
   cleanOldData();
+  updateCurrencies();
 });
 
 app.get("/", (req, res) => {
