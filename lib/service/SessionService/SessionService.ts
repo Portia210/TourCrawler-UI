@@ -45,7 +45,7 @@ class SessionService {
     }).exec();
     return session?._id || null;
   }
-  async getSessionResult(id: string) {
+  async getSessionResult(id: string, currency: string) {
     const sessionInput = await SessionInput.findById(id).exec();
     if (!sessionInput) throw new Error("Session not found");
 
@@ -66,10 +66,11 @@ class SessionService {
     ) {
       status = "FAILED";
     }
-    
-    const analytics = await analyticsService.analytics(
+
+    const analytics = await analyticsService.compare(
       bookingJobId,
-      travelorJobId
+      travelorJobId,
+      currency
     );
 
     return {

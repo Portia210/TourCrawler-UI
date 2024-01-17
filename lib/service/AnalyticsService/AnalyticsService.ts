@@ -1,3 +1,4 @@
+import { filterCompareResults } from "@/lib/utils/filterCompareResults";
 import BookingHotel from "../../database/model/BookingHotelModel";
 import currencyService from "../CurrecyService/CurrencyService";
 import { DEFAULT_CURRENCY } from "../CurrecyService/config";
@@ -8,55 +9,32 @@ class AnalyticsService {
   async analytics(
     bookingJobId: string,
     travelorJobId: string,
-    simpleReport = true
+    currency: string
   ) {
-    const results = await this.compare(bookingJobId, travelorJobId);
-    const totalResults = results.length;
-    if (simpleReport) {
-      return {
-        totalResults,
-        results,
-      };
-    }
-    const totalBookingCheaperHotels = results.filter(
-      (hotel) => Number(hotel.price_difference) > 0
-    ).length;
-    const totalTravelorCheaperHotels = results.filter(
-      (hotel) => Number(hotel.price_difference) < 0
-    ).length;
-    const bookingCheaperHotelsInPercentage =
-      (totalBookingCheaperHotels / totalResults) * 100;
-    const travelorCheaperHotelsInPercentage =
-      100 - bookingCheaperHotelsInPercentage;
-    const avgPriceDifference =
-      results.reduce((acc, hotel) => acc + Number(hotel.price_difference), 0) /
-      totalResults;
-    const minPriceDifference = Math.min(
-      ...results.map((hotel) => Number(hotel.price_difference))
+    const { results } = await this.compare(
+      bookingJobId,
+      travelorJobId,
+      currency
     );
-    const maxPriceDifference = Math.max(
-      ...results.map((hotel) => Number(hotel.price_difference))
-    );
-    const currency = DEFAULT_CURRENCY;
+    const filterResults = filterCompareResults(results);
     return {
       currency,
-      avgPriceDifference,
-      minPriceDifference,
-      maxPriceDifference,
-      totalBookingCheaperHotels,
-      bookingCheaperHotelsInPercentage,
-      travelorCheaperHotelsInPercentage,
-      totalTravelorCheaperHotels,
-      totalResults,
+      ...filterResults,
       results,
     };
   }
 
-  private async compare(bookingJobId: string, travelorJobId: string) {
-    const results: HotelAggregateResult[] = await BookingHotel.aggregate(
+  async compare(bookingJobId: string, travelorJobId: string, currency: string) {
+    const hotels: HotelAggregateResult[] = await BookingHotel.aggregate(
       filters(bookingJobId, travelorJobId)
-    );
-    return await this.filterResults(results);
+    ).sort({
+      travelorPrice: -1,
+    });
+    const results = await this.filterResults(hotels);
+    return {
+      results,
+      totalResults: results.length,
+    };
   }
 
   private async filterResults(
