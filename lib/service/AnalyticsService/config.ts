@@ -30,7 +30,7 @@ export const filters = (bookingJobId: string, travelorJobId: string) => [
       title: { $first: "$title" },
       stars: { $first: "$matchedHotels.stars" },
       rate: { $first: "$rate" },
-      picture_link: { $first: "$matchedHotels.picture_link" },
+      picture_link: { $first: "$picture_link" },
       travelorPrice: { $first: "$matchedHotels.price.amount" },
       bookingPrice: { $first: "$price.amountUnformatted" },
       bookingCurrency: { $first: "$price.currency" },

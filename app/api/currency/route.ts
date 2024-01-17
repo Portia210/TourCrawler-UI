@@ -1,8 +1,7 @@
 import connectMongoDB from "@/lib/database/client";
-import Currencies from "@/lib/database/model/CurrencyModel";
+import currencyService from "@/lib/service/CurrecyService/CurrencyService";
 import { nextReturn } from "@/lib/utils/api";
 import { NextRequest } from "next/server";
-import currencyService from "../../../lib/service/CurrecyService/CurrencyService";
 
 /**
  * Get currency exchange rates
@@ -10,8 +9,8 @@ import currencyService from "../../../lib/service/CurrecyService/CurrencyService
 export async function POST(request: NextRequest) {
   try {
     await connectMongoDB();
-    const data = await currencyService.getCurrencies();
-    return nextReturn(data, 200, "OK");
+    const currencies = await currencyService.getCurrencies();
+    return nextReturn(currencies, 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }

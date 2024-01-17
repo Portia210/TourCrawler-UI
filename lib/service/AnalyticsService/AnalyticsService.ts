@@ -47,7 +47,7 @@ class AnalyticsService {
           travelorCurrency,
           bookingPrice: Math.round(Number(bookingPrice)),
           travelorPrice: Math.round(Number(travelorPrice)),
-          price_difference,
+          price_difference: Math.round(price_difference),
         };
       })
     );
