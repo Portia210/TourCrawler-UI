@@ -1,10 +1,12 @@
 import BookingHotel from "@/lib/database/model/BookingHotelModel";
+import CrawlerJob from "@/lib/database/model/CrawlerJobModel";
 import SessionInput from "@/lib/database/model/SessionInputModel";
 import TravelorHotel from "@/lib/database/model/TravelorHotelModel";
 import { SessionInputDto } from "@/lib/dto/SessionInput.dto";
 import dayjs from "dayjs";
 import { cloneDeep } from "lodash";
 import mongoose from "mongoose";
+import analyticsService from "../AnalyticsService/AnalyticsService";
 import bookingCrawlerService from "../CrawlerService/BookingCrawlerService";
 import travelorCrawlerService from "../CrawlerService/TravelorCrawlerService";
 
@@ -42,6 +44,38 @@ class SessionService {
       createdAt: { $gt: dayjs().subtract(1, "day").toDate() },
     }).exec();
     return session?._id || null;
+  }
+  async getSessionResult(id: string) {
+    const sessionInput = await SessionInput.findById(id).exec();
+    if (!sessionInput) throw new Error("Session not found");
+
+    const { bookingJobId, travelorJobId } = sessionInput;
+    const [bookingJob, travelorJob] = await Promise.all([
+      CrawlerJob.findById(bookingJobId).exec(),
+      CrawlerJob.findById(travelorJobId).exec(),
+    ]);
+
+    if (!bookingJob || !travelorJob) throw new Error("Job not found");
+
+    let status = "RUNNING";
+    if (bookingJob.status === "FINISHED" && travelorJob.status === "FINISHED") {
+      status = bookingJob.status;
+    } else if (
+      bookingJob.status === "FAILED" ||
+      travelorJob.status === "FAILED"
+    ) {
+      status = "FAILED";
+    }
+    
+    const analytics = await analyticsService.analytics(
+      bookingJobId,
+      travelorJobId
+    );
+
+    return {
+      ...analytics,
+      status,
+    };
   }
 
   async cleanUp(): Promise<number> {
