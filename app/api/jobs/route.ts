@@ -11,8 +11,15 @@ import { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   noStore();
   try {
+    const dataSource = request.nextUrl.searchParams.get("dataSource");
+    if (!dataSource)
+      return nextReturn("dataSource is required", 400, "BAD_REQUEST");
+
     await connectMongoDB();
     const jobs = await CrawlerJob.find({
+      dataSource: {
+        $eq: dataSource,
+      },
       status: {
         $eq: "PENDING",
       },
