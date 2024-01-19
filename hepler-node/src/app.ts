@@ -32,7 +32,7 @@ const updateCurrencies = () => {
   axios
     .post(`${crawlerUrl}/api/currency`, {})
     .then((response) =>
-      console.log("updateCurrencies response::", response.data)
+      console.log("updateCurrencies response::", response.status)
     )
     .catch((error) => {
       console.error("updateCurrencies error::", error);
@@ -42,7 +42,7 @@ const updateCurrencies = () => {
 const schedule = "0 0 0 * * *"; // every day at midnight
 const schedule2 = "*/30 * * * * *"; // every 30 seconds for testing
 
-cron.schedule(schedule, function () {
+cron.schedule(schedule2, function () {
   console.log("---------------------");
   cleanOldData();
   updateCurrencies();

@@ -10,10 +10,10 @@ export const SessionInputZSchema = z.object({
   }),
   checkInDate: z.string().pipe(z.coerce.date()),
   checkOutDate: z.string().pipe(z.coerce.date()),
-  rooms: z.number().optional(),
-  adult: z.number().optional(),
-  children: z.number().optional(),
-  childrenAges: z.array(z.number()).optional(),
+  rooms: z.number(),
+  adult: z.number(),
+  children: z.number(),
+  childrenAges: z.array(z.number()),
   guests: z.string().optional(),
 });
 

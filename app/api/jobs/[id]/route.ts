@@ -9,17 +9,23 @@ import { NextRequest } from "next/server";
  * Create job
  */
 export async function PUT(request: NextRequest, context: any) {
+  await connectMongoDB();
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    await connectMongoDB();
     const { id } = context.params;
     const payload = await request.json();
     const command = CrawlerCommandZSchema.parse(payload);
-    await CrawlerJob.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
-      command
-    ).exec();
-    return nextReturn("Success", 200, "OK");
+    const crawlerJob = await CrawlerJob.findById(id).session(session).exec();
+    if (crawlerJob.status !== "PENDING") {
+      session.commitTransaction();
+      return nextReturn(false, 200, "OK");
+    }
+    await CrawlerJob.findByIdAndUpdate(id, command, { session }).exec();
+    session.commitTransaction();
+    return nextReturn(true, 200, "OK");
   } catch (err: any) {
+    session.abortTransaction();
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }
 }
