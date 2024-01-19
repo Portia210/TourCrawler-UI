@@ -21,11 +21,7 @@ export async function PUT(request: NextRequest, context: any) {
       session.commitTransaction();
       return nextReturn(false, 200, "OK");
     }
-    await CrawlerJob.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
-      command,
-      { session }
-    ).exec();
+    await CrawlerJob.findByIdAndUpdate(id, command, { session }).exec();
     session.commitTransaction();
     return nextReturn(true, 200, "OK");
   } catch (err: any) {

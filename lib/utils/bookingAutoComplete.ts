@@ -7,15 +7,21 @@ import { BookingAutoCompleteResult } from "../types/bookingAutoComplete/bookingA
 
 const bookingAutoComplete = async (
   query: string,
-  language = "en",
-  size: number = 5
+  version: "v1" | "v2" = "v2"
+): Promise<BookingAutoCompleteResult[]> => {
+  if (version === "v1") return bookingAutoCompleteV1(query);
+  return bookingAutoCompleteV2(query);
+};
+
+const bookingAutoCompleteV1 = async (
+  query: string
 ): Promise<BookingAutoCompleteResult[]> => {
   const url = `https://accommodations.booking.com/autocomplete.json`;
   const response = await axios
     .post(url, {
       query,
-      language,
-      size,
+      language: "en",
+      size: 5,
     })
     .then((res) => res?.data);
   return response?.results || [];
@@ -50,7 +56,9 @@ const filterBookingResult = (result: BookingAutoCompleteResult) => {
 
 const autoSelectPlace = async (destination: string | undefined) => {
   if (!destination) throw new Error("Destination is required");
-  const results = await bookingAutoCompleteV2(destination);
+  let results = await bookingAutoComplete(destination, "v1");
+  if (!results?.length || results.length === 0)
+    results = await bookingAutoComplete(destination, "v2");
   const places = results?.map((item) => filterBookingResult(item)) || [];
   if (!places.length) throw new Error("No places found");
   const place = places.shift();
@@ -67,5 +75,6 @@ export {
   autoSelectPlace,
   bookingAutoComplete,
   bookingAutoCompleteV2,
-  filterBookingResult,
+  filterBookingResult
 };
+
