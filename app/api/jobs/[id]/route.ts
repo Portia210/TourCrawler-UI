@@ -9,17 +9,17 @@ import { NextRequest } from "next/server";
  * Create job
  */
 export async function PUT(request: NextRequest, context: any) {
-  await connectMongoDB();
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    await connectMongoDB();
     const { id } = context.params;
     const payload = await request.json();
     const command = CrawlerCommandZSchema.parse(payload);
-    const crawlerJob = await CrawlerJob.findById(id).session(session).exec();
-    if (crawlerJob.status !== "PENDING") {
+    const crawlerJob = await CrawlerJob.findById(id);
+    if (!crawlerJob) {
       session.commitTransaction();
-      return nextReturn(false, 200, "OK");
+      return nextReturn(false, 404, "NOT_FOUND");
     }
     await CrawlerJob.findByIdAndUpdate(id, command, { session }).exec();
     session.commitTransaction();
