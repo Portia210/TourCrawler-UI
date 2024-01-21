@@ -2,12 +2,13 @@ import { filterCompareResults } from "@/lib/utils/filterCompareResults";
 import BookingHotel from "../../database/model/BookingHotelModel";
 import { filters } from "./config";
 import { HotelAggregateResult } from "./types";
+import { DEFAULT_CURRENCY } from "../CurrecyService/config";
 
 class AnalyticsService {
   async analytics(
     bookingJobId: string,
     travelorJobId: string,
-    currency: string
+    currency: string = DEFAULT_CURRENCY
   ) {
     const { results } = await this.compare(bookingJobId, travelorJobId);
     const filterResults = filterCompareResults(results);

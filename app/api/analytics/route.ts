@@ -21,8 +21,7 @@ export async function POST(request: NextRequest) {
     }
     const analytics = await analyticsService.analytics(
       bookingJobId,
-      travelorJobId,
-      false
+      travelorJobId
     );
     return nextReturn(analytics, 200, "OK");
   } catch (err: any) {
