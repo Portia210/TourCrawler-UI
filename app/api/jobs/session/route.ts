@@ -4,6 +4,7 @@ import sessionService from "@/lib/service/SessionService/SessionService";
 import { nextReturn } from "@/lib/utils/api";
 import axios from "axios";
 import { NextRequest } from "next/server";
+const CRAWLER_URL = process.env.CRAWLER_URL || "http://localhost:3003";
 
 /**
  * Create job
@@ -26,6 +27,6 @@ export async function POST(request: NextRequest) {
 }
 
 const execute = () => {
-  axios.post("http://localhost:3003/travelor/import-hotels");
-  axios.post("http://localhost:3003/booking/import-hotels");
+  axios.post(`${CRAWLER_URL}/travelor/import-hotels`);
+  axios.post(`${CRAWLER_URL}/booking/import-hotels`);
 };
