@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Create job
- * @deprecated use POST /api/jobs/session
+ * Create schedule job
+ * @deprecated use POST /api/jobs/schedule
  */
 export async function POST(request: NextRequest) {
   try {

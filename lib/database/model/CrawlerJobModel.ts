@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const crawlerJobSchema = new mongoose.Schema(
   {
-    dataSource: String, // Travelor or Booking
+    dataSource: String,
     sessionId: String,
     destination: Object,
     checkInDate: Date,
@@ -12,7 +12,7 @@ const crawlerJobSchema = new mongoose.Schema(
     children: Number,
     childrenAges: Array,
     rooms: Number,
-    status: String, // PENDING, RUNNING, FINISHED, FAILED
+    status: String,
     message: mongoose.Schema.Types.Mixed, // Allow either Object or String
     assignedTo: String, // Worker ID
   },
