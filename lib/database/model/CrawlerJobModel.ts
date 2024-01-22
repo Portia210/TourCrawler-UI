@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
-import { DataSources, JobStatus } from "../shared";
 
 const crawlerJobSchema = new mongoose.Schema(
   {
-    dataSource: DataSources, // Travelor or Booking
+    dataSource: String,
     sessionId: String,
     destination: Object,
     checkInDate: Date,
@@ -13,10 +12,7 @@ const crawlerJobSchema = new mongoose.Schema(
     children: Number,
     childrenAges: Array,
     rooms: Number,
-    status: {
-      enum: JobStatus,
-      default: JobStatus.PENDING,
-    },
+    status: String,
     message: mongoose.Schema.Types.Mixed, // Allow either Object or String
     assignedTo: String, // Worker ID
   },

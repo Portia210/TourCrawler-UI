@@ -2,7 +2,6 @@ import connectMongoDB from "@/lib/database/client";
 import CrawlerJob from "@/lib/database/model/CrawlerJobModel";
 import { CrawlerCommandZSchema } from "@/lib/dto/CrawlerCommand.dto";
 import { nextReturn } from "@/lib/utils/api";
-import axios from "axios";
 import { unstable_noStore as noStore } from "next/cache";
 import { NextRequest } from "next/server";
 

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { JobStatus } from "../shared";
 
 const cronJobSchema = new mongoose.Schema(
   {
@@ -14,11 +13,7 @@ const cronJobSchema = new mongoose.Schema(
       enum: ["ONE_TIME", "SECOND", "HOURLY", "DAILY", "WEEKLY", "MONTHLY"],
       default: "ONE_TIME",
     },
-    status: {
-      type: String,
-      enum: JobStatus,
-      default: JobStatus.PENDING,
-    },
+    status: String,
     message: mongoose.Schema.Types.Mixed, // Allow either Object or String
     assignedTo: String, // Worker ID
   },
