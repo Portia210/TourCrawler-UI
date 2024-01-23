@@ -10,12 +10,9 @@ class BookingCrawlerService {
   /**
    *
    * @param sessionInput
-   * @returns bookingJobId
+   * @returns CrawlerJob
    */
-  async createCommand(
-    input: SessionInputDto,
-    session?: ClientSession
-  ): Promise<string> {
+  async createCommand(input: SessionInputDto, session?: ClientSession) {
     const sessionInput = cloneDeep(input);
     if (!sessionInput?.destination?.dest_type) {
       sessionInput.destination = await autoSelectPlace(
@@ -26,7 +23,7 @@ class BookingCrawlerService {
     command.dataSource = DATA_SOURCES.BOOKING;
     const crawlerJob = new CrawlerJob(command);
     const result = await crawlerJob.save({ session });
-    return result._id;
+    return result;
   }
 }
 const bookingCrawlerService = new BookingCrawlerService();

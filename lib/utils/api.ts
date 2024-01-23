@@ -22,7 +22,6 @@ const nextReturn = (
         payload?.response?.data?.message ||
         payload?.response?.data ||
         payload?.message;
-      payload = errorMgs;
     } else {
       errorMgs = payload;
     }

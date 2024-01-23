@@ -17,16 +17,20 @@ export async function POST(request: NextRequest) {
     let id = await sessionService.checkIfSessionExist(sessionInput);
     if (!id) {
       console.log("Creating new session");
-      id = await sessionService.createSession(sessionInput);
-    } else console.log("Session existed returning...", id);
-    execute();
+      const { _id, bookingCommand, travelorCommand } =
+        await sessionService.createSession(sessionInput);
+      execute(bookingCommand, travelorCommand);
+      id = _id;
+    } else {
+      console.log("Session existed returning...", id);
+    }
     return nextReturn(id, 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");
   }
 }
 
-const execute = () => {
-  axios.post(`${CRAWLER_URL}/travelor/import-hotels`);
-  axios.post(`${CRAWLER_URL}/booking/import-hotels`);
+const execute = (bookingCommand: any, travelorCommand: any) => {
+  axios.post(`${CRAWLER_URL}/booking/import-hotels`, bookingCommand);
+  axios.post(`${CRAWLER_URL}/travelor/import-hotels`, travelorCommand);
 };

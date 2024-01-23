@@ -9,18 +9,15 @@ class TravelorCrawlerService {
   /**
    *
    * @param sessionInput
-   * @returns travelorJobId
+   * @returns CrawlerJob
    */
-  async createCommand(
-    input: SessionInputDto,
-    session?: ClientSession
-  ): Promise<string> {
+  async createCommand(input: SessionInputDto, session?: ClientSession) {
     const sessionInput = cloneDeep(input);
     const command = CrawlerCommandZSchema.parse(sessionInput);
     command.dataSource = DATA_SOURCES.TRAVELOR;
     const crawlerJob = new CrawlerJob(command);
     const result = await crawlerJob.save({ session });
-    return result._id;
+    return result;
   }
 }
 

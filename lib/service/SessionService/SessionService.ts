@@ -11,7 +11,7 @@ import bookingCrawlerService from "../CrawlerService/BookingCrawlerService";
 import travelorCrawlerService from "../CrawlerService/TravelorCrawlerService";
 
 class SessionService {
-  async createSession(sessionInput: SessionInputDto): Promise<string> {
+  async createSession(sessionInput: SessionInputDto) {
     const mongooseSession = await mongoose.startSession();
     mongooseSession.startTransaction();
     try {
@@ -20,13 +20,17 @@ class SessionService {
         travelorCrawlerService.createCommand(sessionInput, mongooseSession),
       ]);
       let data: any = cloneDeep(sessionInput);
-      data.bookingJobId = jobIds[0];
-      data.travelorJobId = jobIds[1];
+      data.bookingJobId = jobIds[0]._id;
+      data.travelorJobId = jobIds[1]._id;
       const sessionInputSearch = new SessionInput(data);
       const result = await sessionInputSearch.save({
         session: mongooseSession,
       });
-      return result._id;
+      return {
+        _id: result._id,
+        bookingCommand: jobIds[0],
+        travelorCommand: jobIds[1],
+      };
     } catch (err) {
       console.error("createSession", err);
       await mongooseSession.abortTransaction();
