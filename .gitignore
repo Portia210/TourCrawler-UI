@@ -5,6 +5,11 @@
 node_modules
 dist
 
+# next.js
+.next/
+
+build/
+
 /.pnp
 .pnp.js
 .yarn/install-state.gz
