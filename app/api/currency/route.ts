@@ -1,5 +1,6 @@
 import connectMongoDB from "@/lib/database/client";
 import currencyService from "@/lib/service/CurrecyService/CurrencyService";
+import { CURRENCIES } from "@/lib/service/CurrecyService/config";
 import { nextReturn } from "@/lib/utils/api";
 import { NextRequest } from "next/server";
 
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
       currency: currencies.base,
       name: "United States Dollar",
       rate: 1,
+      symbol: CURRENCIES[currencies.base],
     };
     currencies.rates.push(baseCurrency);
     currencies.rates = currencies.rates.reverse();

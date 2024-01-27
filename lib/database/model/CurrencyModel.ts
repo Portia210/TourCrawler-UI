@@ -10,6 +10,7 @@ const currenciesSchema = new mongoose.Schema(
         currency: String,
         name: String,
         rate: Number,
+        symbol: String,
       },
     ],
   },

@@ -1,6 +1,7 @@
 import Currencies from "@/lib/database/model/CurrencyModel";
 import axios from "axios";
 import dayjs from "dayjs";
+import { CURRENCIES } from "./config";
 
 /**
  * All currencies are base on USD
@@ -15,8 +16,8 @@ class CurrencyService {
     let currencies = await Currencies.findOne({
       base: "USD",
     }).exec();
-    if (dayjs().diff(currencies?.createdAt, "hour") < 4) {
-      console.log("Get currencies from cache");
+    if (currencies && dayjs().diff(currencies?.createdAt, "hour") < 4) {
+      console.log("Get Currency from cache");
       return currencies;
     }
     const currenciesData = await axios
@@ -25,18 +26,26 @@ class CurrencyService {
     const exchageRates = await axios
       .get(`https://api.frankfurter.app/latest?from=USD`)
       .then((res) => res.data);
-    const rates = Object.keys(exchageRates.rates).map((key) => ({
-      currency: key,
-      name: currenciesData[key],
-      rate: exchageRates.rates[key],
-    }));
+    const rates = Object.keys(exchageRates.rates)
+      .map((key: string) => {
+        if (!CURRENCIES[key]) return;
+        return {
+          currency: key,
+          name: currenciesData[key],
+          rate: exchageRates.rates[key],
+          symbol: CURRENCIES[key],
+        };
+      })
+      .filter(Boolean);
     delete exchageRates.rates;
     const results = {
       ...exchageRates,
       rates,
     };
-    currencies = Currencies.findOneAndUpdate({ base: results.base }, results);
-    return currencies;
+    await Currencies.findOneAndUpdate({ base: results.base }, results, {
+      upsert: true,
+    });
+    return results;
   }
 }
 

@@ -1,3 +1,16 @@
 const DEFAULT_CURRENCY = "USD";
 
-export { DEFAULT_CURRENCY };
+const CURRENCIES: any = {
+  USD: "$",
+  ILS: "₪",
+  EUR: "€",
+  JPY: "¥",
+  GBP: "£",
+  CHF: "CHF",
+  CAD: "CA$",
+  AUD: "A$",
+  CNY: "¥",
+  SGD: "S$",
+};
+
+export { DEFAULT_CURRENCY, CURRENCIES };
