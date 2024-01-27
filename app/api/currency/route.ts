@@ -17,8 +17,7 @@ export async function POST(request: NextRequest) {
       rate: 1,
       symbol: CURRENCIES[currencies.base],
     };
-    currencies.rates.push(baseCurrency);
-    currencies.rates = currencies.rates.reverse();
+    currencies.rates.unshift(baseCurrency);
     return nextReturn(currencies, 200, "OK");
   } catch (err: any) {
     return nextReturn(err?.message || err, 500, "INTERNAL_SERVER_ERROR");

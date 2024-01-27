@@ -26,17 +26,15 @@ class CurrencyService {
     const exchageRates = await axios
       .get(`https://api.frankfurter.app/latest?from=USD`)
       .then((res) => res.data);
-    const rates = Object.keys(exchageRates.rates)
-      .map((key: string) => {
-        if (!CURRENCIES[key]) return;
-        return {
-          currency: key,
-          name: currenciesData[key],
-          rate: exchageRates.rates[key],
-          symbol: CURRENCIES[key],
-        };
-      })
-      .filter(Boolean);
+    const rates = Object.keys(CURRENCIES).map((key: string) => {
+      if (!exchageRates.rates[key]) return;
+      return {
+        currency: key,
+        name: currenciesData[key],
+        rate: exchageRates.rates[key],
+        symbol: CURRENCIES[key],
+      };
+    }).filter(Boolean);
     delete exchageRates.rates;
     const results = {
       ...exchageRates,
